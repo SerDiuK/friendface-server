@@ -1,8 +1,7 @@
-import { ChatMessage } from '../models/chat';
+import ChatMessageSchema, { ChatMessage } from '../models/chat-message';
 import { LoggerService } from './logger.service';
 import moment from 'moment';
 
-import MessageSchema from '../models/chat';
 const logger = LoggerService.getInstance();
 
 export class ChatService {
@@ -17,7 +16,7 @@ export class ChatService {
   }
 
   getAllMessages(): Promise<ChatMessage[]> {
-    return MessageSchema.find({})
+    return ChatMessageSchema.find({})
       .sort('timestamp')
       .exec().then(messages => {
         logger.info('getAllMessages SUCCESS', messages);
@@ -29,9 +28,9 @@ export class ChatService {
   }
 
   postMessage(body: ChatMessage): Promise<ChatMessage> {
-    const newMessage = new MessageSchema({
+    const newMessage = new ChatMessageSchema({
       ...body,
-      timestamp: moment().format('YYYY-MM-DD HH:mm:ss')
+      timestamp: moment().format()
     });
 
     return newMessage.save().then(msg => {
@@ -44,7 +43,7 @@ export class ChatService {
   }
 
   deleteMessages(): Promise<void> {
-    return MessageSchema.deleteMany({}).then(messages => {
+    return ChatMessageSchema.deleteMany({}).then(messages => {
       logger.info('deleteMessages SUCCESS', messages);
       return {};
     }).catch(err => {

@@ -1,12 +1,12 @@
 import { Schema, Document, model } from 'mongoose';
 
-export interface ChatMessage {
+export interface BoardMessage {
   author: string;
   message: string;
   timestamp: string;
 }
 
-export interface ChatMessageDocument extends Document, ChatMessage {
+export interface BoardMessageDocument extends Document, BoardMessage {
 }
 
 const ChatSchema: Schema = new Schema({
@@ -15,4 +15,4 @@ const ChatSchema: Schema = new Schema({
   timestamp: { type: String, required: true },
 });
 
-export default model<ChatMessageDocument>('Chat', ChatSchema);
+export default model<BoardMessageDocument>('BoardMessages', ChatSchema);
