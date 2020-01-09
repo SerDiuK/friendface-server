@@ -1,9 +1,12 @@
+import { WebSocketTopic } from '../models/websocket-message';
 import { LoggerService } from '../services/logger.service';
 import { Request, Response } from 'express';
 import { ChatService } from '../services/chat.service';
+import { WebSocketService } from '../services/websocket.service';
 
 const logger = LoggerService.getInstance();
 const chatService = ChatService.getInstance();
+const wsService = WebSocketService.getInstance();
 
 export class ChatController {
   async getAllMessages(req: Request, res: Response): Promise<void> {
@@ -15,7 +18,10 @@ export class ChatController {
   async postMessage(req: Request, res: Response): Promise<void> {
     logger.info('Incoming query postMessage');
 
-    res.json(await chatService.postMessage(req.body));
+    const msg = await chatService.postMessage(req.body);
+    await wsService.sendMessage(WebSocketTopic.Chat, msg);
+
+    res.json(msg);
   }
 
   async deleteMessages(req: Request, res: Response): Promise<void> {

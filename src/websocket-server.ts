@@ -1,16 +1,16 @@
 import * as http from 'http';
+import { WebSocketController } from './controllers/websocket.controller';
 import { LoggerService } from './services/logger.service';
-import { WebSocketService } from './services/websocket.service';
 
 const logger = LoggerService.getInstance();
-const wsService = WebSocketService.getInstance();
 
 export class WebSocketServer {
 
   static init(): void {
     const server = http.createServer();
+    const wsController = new WebSocketController();
 
-    wsService.initWebSocketServer(server);
+    wsController.handleConnection(server);
 
     server.listen(3001, () => logger.info('Websocket Server Initialised on port: 3001'));
   }

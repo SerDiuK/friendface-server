@@ -9,3 +9,5 @@ export enum WebSocketTopic {
   Chat = 'chat',
   Status = 'status'
 }
+
+export type WebSocketDataType = ChatMessage;

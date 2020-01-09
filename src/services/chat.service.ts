@@ -1,8 +1,10 @@
+import moment from 'moment';
 import ChatMessageSchema, { ChatMessage } from '../models/chat-message';
 import { LoggerService } from './logger.service';
-import moment from 'moment';
+import { WebSocketService } from './websocket.service';
 
 const logger = LoggerService.getInstance();
+const wsService = WebSocketService.getInstance();
 
 export class ChatService {
   private static instance: ChatService;
@@ -33,7 +35,7 @@ export class ChatService {
       timestamp: moment().format()
     });
 
-    return newMessage.save().then(msg => {
+    return newMessage.save().then(async msg => {
       logger.info('postMessage SUCCESS', msg);
       return msg;
     }).catch(err => {
