@@ -8,8 +8,8 @@ export class BoardRoutes {
     const controller = new BoardController();
 
     router.route('/')
-      .get(controller.getAllMessages)
-      .post(controller.postMessage);
+      .get(controller.getBoardMessages)
+      .post(controller.postBoardMessage);
 
     return router;
   }

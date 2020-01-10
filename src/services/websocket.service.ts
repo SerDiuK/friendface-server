@@ -1,9 +1,11 @@
 import { Server } from 'http';
 import * as WebSocket from 'ws';
 import { WebSocketDataType, WebSocketTopic } from '../models/websocket-message';
+import { ConnectedUserService } from './connected-user.service';
 import { LoggerService } from './logger.service';
 
 const logger = LoggerService.getInstance();
+const connectedUserService = ConnectedUserService.getInstance();
 
 export class WebSocketService {
   private static instance: WebSocketService;
@@ -18,8 +20,9 @@ export class WebSocketService {
     return WebSocketService.instance;
   }
 
-  initWebSocketServer(server: Server): void {
+  async initWebSocketServer(server: Server): Promise<{}> {
     this.webSocketServer = new WebSocket.Server({ server });
+    return connectedUserService.clearConnectedUsers();
   }
 
   sendMessage(topic: WebSocketTopic, data: WebSocketDataType): void {

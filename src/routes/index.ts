@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { ChatRoutes } from './chat.routes';
 import { BoardRoutes } from './board.routes';
+import { ConnectedUsersRoutes } from './connected-users.routes';
 
 export class ApplicationRoutes {
   static getRoutes(): Router {
@@ -12,6 +13,7 @@ export class ApplicationRoutes {
 
     router.use('/chat', ChatRoutes.getRoutes());
     router.use('/board', BoardRoutes.getRoutes());
+    router.use('/connected-users', ConnectedUsersRoutes.getRoutes());
 
     return router;
   }

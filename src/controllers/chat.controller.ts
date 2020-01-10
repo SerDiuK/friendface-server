@@ -9,24 +9,24 @@ const chatService = ChatService.getInstance();
 const wsService = WebSocketService.getInstance();
 
 export class ChatController {
-  async getAllMessages(req: Request, res: Response): Promise<void> {
-    logger.info('Incoming query getAllMessages');
+  async getChatMessages(req: Request, res: Response): Promise<void> {
+    logger.info('Incoming query getChatMessages');
 
-    res.json(await chatService.getAllMessages());
+    res.json(await chatService.getChatMessages());
   }
 
-  async postMessage(req: Request, res: Response): Promise<void> {
-    logger.info('Incoming query postMessage');
+  async postChatMessage(req: Request, res: Response): Promise<void> {
+    logger.info('Incoming query postChatMessage');
 
-    const msg = await chatService.postMessage(req.body);
+    const msg = await chatService.postChatMessage(req.body);
     await wsService.sendMessage(WebSocketTopic.Chat, msg);
 
     res.json(msg);
   }
 
-  async deleteMessages(req: Request, res: Response): Promise<void> {
-    logger.info('Incoming query deleteMessages');
+  async deleteChatMessages(req: Request, res: Response): Promise<void> {
+    logger.info('Incoming query deleteChatMessages');
 
-    res.json(await chatService.deleteMessages());
+    res.json(await chatService.deleteChatMessages());
   }
 }

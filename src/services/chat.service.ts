@@ -1,10 +1,8 @@
 import moment from 'moment';
 import ChatMessageSchema, { ChatMessage } from '../models/chat-message';
 import { LoggerService } from './logger.service';
-import { WebSocketService } from './websocket.service';
 
 const logger = LoggerService.getInstance();
-const wsService = WebSocketService.getInstance();
 
 export class ChatService {
   private static instance: ChatService;
@@ -17,39 +15,39 @@ export class ChatService {
     return ChatService.instance;
   }
 
-  getAllMessages(): Promise<ChatMessage[]> {
+  getChatMessages(): Promise<ChatMessage[]> {
     return ChatMessageSchema.find({})
       .sort('timestamp')
       .exec().then(messages => {
-        logger.info('getAllMessages SUCCESS', messages);
+        logger.info('getBoardMessages SUCCESS', messages);
         return messages;
       }).catch(err => {
-        logger.error('getAllMessages FAILED', err);
+        logger.error('getBoardMessages FAILED', err);
         return err;
       });
   }
 
-  postMessage(body: ChatMessage): Promise<ChatMessage> {
+  postChatMessage(body: ChatMessage): Promise<ChatMessage> {
     const newMessage = new ChatMessageSchema({
       ...body,
       timestamp: moment().format()
     });
 
     return newMessage.save().then(async msg => {
-      logger.info('postMessage SUCCESS', msg);
+      logger.info('postChatMessage SUCCESS', msg);
       return msg;
     }).catch(err => {
-      logger.error('postMessage FAILED', err);
+      logger.error('postChatMessage FAILED', err);
       return err;
     });
   }
 
-  deleteMessages(): Promise<void> {
-    return ChatMessageSchema.deleteMany({}).then(messages => {
-      logger.info('deleteMessages SUCCESS', messages);
+  deleteChatMessages(): Promise<void> {
+    return ChatMessageSchema.deleteMany({}).then(() => {
+      logger.info('deleteChatMessages SUCCESS');
       return {};
     }).catch(err => {
-      logger.error('deleteMessages FAILED', err);
+      logger.error('deleteChatMessages FAILED', err);
       return err;
     });
   }

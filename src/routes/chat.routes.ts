@@ -7,9 +7,9 @@ export class ChatRoutes {
     const controller = new ChatController();
 
     router.route('/')
-      .get(controller.getAllMessages)
-      .post(controller.postMessage)
-      .delete(controller.deleteMessages);
+      .get(controller.getChatMessages)
+      .post(controller.postChatMessage)
+      .delete(controller.deleteChatMessages);
 
     return router;
   }
