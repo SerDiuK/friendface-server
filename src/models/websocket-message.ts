@@ -11,6 +11,8 @@ export enum WebSocketTopic {
   Chat = 'chat',
   Status = 'status',
   Login = 'login',
+  UserConnected = 'user connected',
+  UserDisconnected = 'user disconnected',
 }
 
 export type LoginMessageData = Partial<ConnectedUser>;

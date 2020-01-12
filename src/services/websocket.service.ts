@@ -25,10 +25,10 @@ export class WebSocketService {
     return connectedUserService.clearConnectedUsers();
   }
 
-  sendMessage(topic: WebSocketTopic, data: WebSocketDataType): void {
+  sendMessage(topic: WebSocketTopic, data: WebSocketDataType, target?: string): void {
     this.webSocketServer.clients.forEach(function each(client) {
       if (client.readyState === WebSocket.OPEN) {
-        logger.info('Broadcast Chat Message Response', data);
+        logger.info('Broadcast Chat Message', topic, data);
         client.send(JSON.stringify({ topic, data }));
       }
     });

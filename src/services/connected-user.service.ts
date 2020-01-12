@@ -39,7 +39,7 @@ export class ConnectedUserService {
   removeConnectedUser(webSocketSessionId: string): Promise<ConnectedUser> {
     return ConnectedUserSchema.findOneAndDelete({ webSocketSessionId }).then(user => {
       logger.info('removeConnectedUser SUCCESS', user);
-      return {};
+      return user._id;
     }).catch(err => {
       logger.error('removeConnectedUser FAILED', err);
       return err;
