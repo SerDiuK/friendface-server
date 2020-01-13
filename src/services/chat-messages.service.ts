@@ -4,15 +4,15 @@ import { LoggerService } from './logger.service';
 
 const logger = LoggerService.getInstance();
 
-export class ChatService {
-  private static instance: ChatService;
+export class ChatMessagesService {
+  private static instance: ChatMessagesService;
 
-  static getInstance(): ChatService {
-    if (!ChatService.instance) {
-      ChatService.instance = new ChatService();
+  static getInstance(): ChatMessagesService {
+    if (!ChatMessagesService.instance) {
+      ChatMessagesService.instance = new ChatMessagesService();
     }
 
-    return ChatService.instance;
+    return ChatMessagesService.instance;
   }
 
   getChatMessages(): Promise<ChatMessage[]> {

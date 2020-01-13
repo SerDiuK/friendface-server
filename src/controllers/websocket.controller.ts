@@ -3,7 +3,7 @@ import { BoardMessage } from '../models/board-message';
 import { ChatMessage } from '../models/chat-message';
 import { LoginMessageData, WebSocketMessage, WebSocketTopic } from '../models/websocket-message';
 import { BoardService } from '../services/board.service';
-import { ChatService } from '../services/chat.service';
+import { ChatMessagesService } from '../services/chat-messages.service';
 import { ConnectedUserService } from '../services/connected-user.service';
 import { LoggerService } from '../services/logger.service';
 import { WebSocketService } from '../services/websocket.service';
@@ -11,7 +11,7 @@ import * as WebSocket from 'ws';
 import uuid from 'uuid/v1';
 
 const wsService = WebSocketService.getInstance();
-const chatService = ChatService.getInstance();
+const chatService = ChatMessagesService.getInstance();
 const boardService = BoardService.getInstance();
 const connectedUserService = ConnectedUserService.getInstance();
 const logger = LoggerService.getInstance();

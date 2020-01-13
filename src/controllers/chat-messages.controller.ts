@@ -1,14 +1,15 @@
+import { Error } from 'mongoose';
 import { WebSocketTopic } from '../models/websocket-message';
 import { LoggerService } from '../services/logger.service';
 import { Request, Response } from 'express';
-import { ChatService } from '../services/chat.service';
+import { ChatMessagesService } from '../services/chat-messages.service';
 import { WebSocketService } from '../services/websocket.service';
 
 const logger = LoggerService.getInstance();
-const chatService = ChatService.getInstance();
+const chatService = ChatMessagesService.getInstance();
 const wsService = WebSocketService.getInstance();
 
-export class ChatController {
+export class ChatMessagesController {
   async getChatMessages(req: Request, res: Response): Promise<void> {
     logger.info('Incoming query getChatMessages');
 
@@ -19,7 +20,10 @@ export class ChatController {
     logger.info('Incoming query postChatMessage');
 
     const msg = await chatService.postChatMessage(req.body);
-    await wsService.sendMessage(WebSocketTopic.Chat, msg);
+
+    if (!(msg as any).errors) {
+      wsService.sendMessage(WebSocketTopic.Chat, msg);
+    }
 
     res.json(msg);
   }

@@ -26,16 +26,25 @@ npm start
 Chat messages:
 
 ```
-GET    api/chat        - Get all chat messages
-POST   api/cars        - Post a chat message with BODY: { author: string, message: string }
-DELETE api/cars        - Delete all chat messages
+GET    api/chat-messages     - Get all chat messages
+POST   api/chat-messages     - Post a chat message with BODY: { author: string, message: string }
+DELETE api/chat-messages     - Delete all chat messages
 ```
 
 Connected users:
 
 ```
-GET    api/connected-users      - Get all connected users
+GET    api/connected-users   - Get all connected users
 ```
+
+Channels:
+
+```
+GET    api/channels          - Get all channels
+```
+
+The entire documentation can be found on Postman:
+`https://documenter.getpostman.com/view/2240400/SWLiaRoD
 
 ## Websocket
 
@@ -54,4 +63,33 @@ The Websocket emits the following messages:
 { topic: 'user connected', data: { _id: string, name: string, websocketSession: string }}
 { topic: 'user disconnected', data: { id: string }}
 
+```
+
+Initialising Websocket on Angular is simple by using Rxjs Websocket which is natively included with Rxjs.
+
+Here's an example service:
+
+```ts
+@Injectable({
+  providedIn: 'root'
+})
+export class WebSocketService {
+  websocket: WebSocketSubject<WebSocketMessage> = webSocket('ws://localhost:3001');
+
+  constructor() { }
+
+  sendMessage<T extends WebSocketDataType>(topic: WebSocketTopic, data: T) {
+    this.websocket.next({
+      topic,
+      data
+    });
+  }
+
+  listenToMessages<T extends WebSocketDataType>(filterTopic?: WebSocketTopic): Observable<T> {
+    return this.websocket.asObservable().pipe(
+      filter(message => filterTopic ? message.topic === filterTopic : true),
+      map(message => message.data as T)
+    );
+  }
+}
 ```

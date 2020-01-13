@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { ChatController } from '../controllers/chat.controller';
+import { ChatMessagesController } from '../controllers/chat-messages.controller';
 
-export class ChatRoutes {
+export class ChatMessagesRoutes {
   static getRoutes(): Router {
     const router = Router();
-    const controller = new ChatController();
+    const controller = new ChatMessagesController();
 
     router.route('/')
       .get(controller.getChatMessages)
