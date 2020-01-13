@@ -77,13 +77,13 @@ export class WebSocketConnection {
       webSocketSessionId: this.id
     });
 
-    wsService.sendMessage(WebSocketTopic.UserConnected, newUser as LoginMessageData)
+    wsService.sendMessage(WebSocketTopic.UserConnected, newUser as LoginMessageData);
   }
 
   private async handleConnectionClosed(): Promise<void> {
     logger.info('Connection Closed', this.id);
 
-    const deletedUser = await connectedUserService.removeConnectedUser(this.id);
-    wsService.sendMessage(WebSocketTopic.UserDisconnected, deletedUser as LoginMessageData)
+    const deletedUserId = await connectedUserService.removeConnectedUser(this.id);
+    wsService.sendMessage(WebSocketTopic.UserDisconnected, { id: deletedUserId } as LoginMessageData);
   }
 }

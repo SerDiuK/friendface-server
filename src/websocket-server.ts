@@ -9,9 +9,10 @@ export class WebSocketServer {
   static init(): void {
     const server = http.createServer();
     const wsController = new WebSocketController();
+    const port = process.env.WEBSOCKET_PORT || 3001;
 
     wsController.handleConnection(server);
 
-    server.listen(3001, () => logger.info('Websocket Server Initialised on port: 3001'));
+    server.listen(port, () => logger.info('Websocket Server Initialised on port: 3001'));
   }
 }

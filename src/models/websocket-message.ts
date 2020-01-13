@@ -17,4 +17,10 @@ export enum WebSocketTopic {
 
 export type LoginMessageData = Partial<ConnectedUser>;
 
-export type WebSocketDataType = ChatMessage | LoginMessageData | BoardMessage;
+export type WebSocketDataType = ChatMessage | LoginMessageData | BoardMessage | UserConnectedData | UserDisconnectedData;
+
+export type UserConnectedData = ConnectedUser;
+
+export interface UserDisconnectedData {
+  id: string;
+}
