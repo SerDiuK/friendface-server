@@ -27,7 +27,7 @@ export class ChatMessagesController {
     const msg = await chatService.postChatMessage(req.body);
 
     if (!(msg as any).errors) {
-      wsService.sendMessage(WebSocketTopic.Chat, msg);
+      wsService.sendTargettedMessage(WebSocketTopic.Chat, msg, ['5e1c6857feca18b5358f6913']);
     }
 
     res.json(msg);

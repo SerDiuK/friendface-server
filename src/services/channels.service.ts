@@ -42,10 +42,10 @@ export class ChannelsService {
     });
   }
 
-  deleteChannel(id): Promise<void> {
+  deleteChannel(id): Promise<string> {
     return ChannelMessageSchema.findByIdAndDelete(id).then(() => {
       logger.info('deleteChannel SUCCESS');
-      return {};
+      return id;
     }).catch(err => {
       logger.error('deleteChannel FAILED', err);
       return err;

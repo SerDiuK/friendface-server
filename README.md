@@ -53,8 +53,8 @@ Connect to the websocket on `localhost:${WEBSOCKET_PORT}`. By default this is `3
 The Websocket listens to the following messages:
 
 ```
-{ topic: 'login', data: { name: string }}
-{ topic: 'chat', data: { author: string, message: string }}
+{ "topic": "login", "data": { "name": "string" }}
+{ "topic": "chat", "data": { "author": "string", "message": "string" }}
 ```
 
 The Websocket emits the following messages:

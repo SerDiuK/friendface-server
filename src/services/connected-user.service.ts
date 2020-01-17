@@ -1,4 +1,4 @@
-import ConnectedUserSchema, { ConnectedUser } from '../models/connected-user.service';
+import ConnectedUserSchema, { ConnectedUser } from '../models/connected-user';
 import { LoggerService } from './logger.service';
 
 const logger = LoggerService.getInstance();
@@ -15,7 +15,7 @@ export class ConnectedUserService {
   }
 
   getConnectedUsers(): Promise<ConnectedUser[]> {
-    return ConnectedUserSchema.find({}).then((users) => {
+    return ConnectedUserSchema.find({}, 'name').then((users) => {
       logger.info('getConnectedUsers SUCCESS', users);
       return users;
     }).catch(err => {
@@ -52,6 +52,16 @@ export class ConnectedUserService {
       return {};
     }).catch(err => {
       logger.error('clearConnectedUsers FAILED', err);
+      return err;
+    });
+  }
+
+  updateChannel(userId: string, channelId: string): Promise<ConnectedUser> {
+    return ConnectedUserSchema.findByIdAndUpdate(userId, { channel: channelId }).then(channel => {
+      logger.info('updateChannel SUCCESS');
+      return channel;
+    }).catch(err => {
+      logger.error('updateChannel FAILED', err);
       return err;
     });
   }

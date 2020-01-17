@@ -1,5 +1,6 @@
 import { Server } from 'http';
 import * as WebSocket from 'ws';
+import { WebSocketExtended, webSocketId } from '../controllers/websocket.controller';
 import { WebSocketDataType, WebSocketTopic } from '../models/websocket-message';
 import { ConnectedUserService } from './connected-user.service';
 import { LoggerService } from './logger.service';
@@ -25,13 +26,22 @@ export class WebSocketService {
     return connectedUserService.clearConnectedUsers();
   }
 
-  sendMessage(topic: WebSocketTopic, data: WebSocketDataType, target?: string): void {
-    this.webSocketServer.clients.forEach(function each(client) {
-      if (client.readyState === WebSocket.OPEN) {
-        logger.info('Broadcast Chat Message', topic, data);
-        client.send(JSON.stringify({ topic, data }));
+  broadcastMessage(topic: WebSocketTopic, data: WebSocketDataType): void {
+    this.webSocketServer.clients.forEach(function each(client: WebSocketExtended) {
+      if (client.readyState === WebSocket.OPEN && client.isLoggedIn) {
+        logger.info('Broadcast Message', topic, data);
+        client.send(JSON.stringify({topic, data}));
       }
     });
   }
 
+  sendTargettedMessage(topic: WebSocketTopic, data: WebSocketDataType, target: webSocketId[]) {
+    this.webSocketServer.clients.forEach(function each(client: WebSocketExtended) {
+      if (client.readyState === WebSocket.OPEN && client.isLoggedIn && target.includes(client.id)) {
+        logger.info('Send targetted Message', topic, data);
+        client.send(JSON.stringify({topic, data}));
+      }
+    });
+
+  }
 }

@@ -1,6 +1,7 @@
+import { Request, Response } from 'express';
+import { WebSocketTopic } from '../models/websocket-message';
 import { ChannelsService } from '../services/channels.service';
 import { LoggerService } from '../services/logger.service';
-import { Request, Response } from 'express';
 import { WebSocketService } from '../services/websocket.service';
 
 const logger = LoggerService.getInstance();
@@ -17,14 +18,19 @@ export class ChannelsController {
   async createChannel(req: Request, res: Response): Promise<void> {
     logger.info('Incoming query createChannel');
 
-    const msg = await channelsService.createChannel(req.body);
+    const channel = await channelsService.createChannel(req.body);
+    wsService.broadcastMessage(WebSocketTopic.ChannelCreated, channel);
 
-    res.json(msg);
+    res.json(channel);
   }
 
   async deleteChannel(req: Request, res: Response): Promise<void> {
     logger.info('Incoming query deleteChannel');
+    const channelId = req.params.id;
 
-    res.json(await channelsService.deleteChannel(req.params.id));
+    await channelsService.deleteChannel(channelId);
+
+    wsService.broadcastMessage(WebSocketTopic.ChannelDeleted, { id: channelId });
+    res.json({});
   }
 }
