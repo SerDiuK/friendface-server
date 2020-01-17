@@ -27,6 +27,18 @@ export class ChatMessagesService {
       });
   }
 
+  getChatByChannelId(channel: string): Promise<ChatMessage[]> {
+    return ChatMessageSchema.find({ channel })
+      .sort('timestamp')
+      .exec().then(messages => {
+        logger.info('getBoardMessages SUCCESS', messages);
+        return messages;
+      }).catch(err => {
+        logger.error('getBoardMessages FAILED', err);
+        return err;
+      });
+  }
+
   postChatMessage(body: ChatMessage): Promise<ChatMessage> {
     const newMessage = new ChatMessageSchema({
       ...body,

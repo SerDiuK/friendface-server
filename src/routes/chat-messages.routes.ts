@@ -11,6 +11,9 @@ export class ChatMessagesRoutes {
       .post(controller.postChatMessage)
       .delete(controller.deleteChatMessages);
 
+    router.route('/:id')
+      .get(controller.getChatMessagesByChannelId);
+
     return router;
   }
 }

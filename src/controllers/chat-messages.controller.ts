@@ -1,4 +1,3 @@
-import { Error } from 'mongoose';
 import { WebSocketTopic } from '../models/websocket-message';
 import { LoggerService } from '../services/logger.service';
 import { Request, Response } from 'express';
@@ -14,6 +13,12 @@ export class ChatMessagesController {
     logger.info('Incoming query getChatMessages');
 
     res.json(await chatService.getChatMessages());
+  }
+
+  async getChatMessagesByChannelId(req: Request, res: Response): Promise<void> {
+    logger.info('Incoming query getChatMessagesByChannelId');
+
+    res.json(await chatService.getChatByChannelId(req.params.id));
   }
 
   async postChatMessage(req: Request, res: Response): Promise<void> {
