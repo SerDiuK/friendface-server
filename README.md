@@ -54,14 +54,14 @@ The Websocket listens to the following messages:
 
 ```
 { "topic": "login", "data": { "name": "string" }}
-{ "topic": "chat", "data": { "author": "string", "message": "string" }}
+{ "topic": "join channel", "data": { "id": "string" }}
 ```
 
 The Websocket emits the following messages:
 ```
-{ topic: 'chat', data: { author: string, message: string }}
-{ topic: 'user connected', data: { _id: string, name: string, websocketSession: string }}
-{ topic: 'user disconnected', data: { id: string }}
+{ "topic": "chat", "data": { "author": "string", "message": "string" }} // Chat message sent to channel
+{ "topic": "user connected", "data": { "_id": "string", "name": "string", "websocketSession": "string" }} // User connected to channel
+{ topic: "user disconnected", "data": { "id": "string" }} // User disconnected from channel
 
 ```
 

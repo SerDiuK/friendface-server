@@ -1,5 +1,6 @@
 import ConnectedUserSchema, { ConnectedUser } from '../models/connected-user';
 import { LoggerService } from './logger.service';
+import { ConnectedUserDocument } from '../models/connected-user';
 
 const logger = LoggerService.getInstance();
 
@@ -15,7 +16,7 @@ export class ConnectedUserService {
   }
 
   getConnectedUsers(): Promise<ConnectedUser[]> {
-    return ConnectedUserSchema.find({}, 'name').then((users) => {
+    return ConnectedUserSchema.find({}, 'name channel').then((users) => {
       logger.info('getConnectedUsers SUCCESS', users);
       return users;
     }).catch(err => {
@@ -24,7 +25,17 @@ export class ConnectedUserService {
     });
   }
 
-  addConnectedUser(user: ConnectedUser): Promise<ConnectedUser[]> {
+  getConnectedUsersByChannel(channel: string): Promise<ConnectedUser[]> {
+    return ConnectedUserSchema.find({ channel }, 'name').then((users) => {
+      logger.info('getConnectedUsersByChannel SUCCESS', users);
+      return users;
+    }).catch(err => {
+      logger.error('getConnectedUsersByChannel FAILED', err);
+      return err;
+    });
+  }
+
+  addConnectedUser(user: ConnectedUser): Promise<ConnectedUser> {
     const newUser = new ConnectedUserSchema(user);
 
     return newUser.save().then(msg => {
@@ -56,8 +67,8 @@ export class ConnectedUserService {
     });
   }
 
-  updateChannel(userId: string, channelId: string): Promise<ConnectedUser> {
-    return ConnectedUserSchema.findByIdAndUpdate(userId, { channel: channelId }).then(channel => {
+  updateChannel(webSocketSessionId: string, channelId: string): Promise<ConnectedUser> {
+    return ConnectedUserSchema.findOneAndUpdate({ webSocketSessionId }, { channel: channelId }).then(channel => {
       logger.info('updateChannel SUCCESS');
       return channel;
     }).catch(err => {

@@ -19,10 +19,10 @@ export class ChatMessagesService {
     return ChatMessageSchema.find({})
       .sort('timestamp')
       .exec().then(messages => {
-        logger.info('getBoardMessages SUCCESS', messages);
+        logger.info('getChatMessages SUCCESS', messages);
         return messages;
       }).catch(err => {
-        logger.error('getBoardMessages FAILED', err);
+        logger.error('getChatMessages FAILED', err);
         return err;
       });
   }
@@ -31,10 +31,10 @@ export class ChatMessagesService {
     return ChatMessageSchema.find({ channel })
       .sort('timestamp')
       .exec().then(messages => {
-        logger.info('getBoardMessages SUCCESS', messages);
+        logger.info('getChatByChannelId SUCCESS', messages);
         return messages;
       }).catch(err => {
-        logger.error('getBoardMessages FAILED', err);
+        logger.error('getChatByChannelId FAILED', err);
         return err;
       });
   }

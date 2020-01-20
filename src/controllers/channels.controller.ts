@@ -19,7 +19,7 @@ export class ChannelsController {
     logger.info('Incoming query createChannel');
 
     const channel = await channelsService.createChannel(req.body);
-    wsService.broadcastMessage(WebSocketTopic.ChannelCreated, channel);
+    wsService.broadcastWsMessage(WebSocketTopic.ChannelCreated, channel);
 
     res.json(channel);
   }
@@ -30,7 +30,7 @@ export class ChannelsController {
 
     await channelsService.deleteChannel(channelId);
 
-    wsService.broadcastMessage(WebSocketTopic.ChannelDeleted, { id: channelId });
+    wsService.broadcastWsMessage(WebSocketTopic.ChannelDeleted, { id: channelId });
     res.json({});
   }
 }

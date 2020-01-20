@@ -26,22 +26,33 @@ export class WebSocketService {
     return connectedUserService.clearConnectedUsers();
   }
 
-  broadcastMessage(topic: WebSocketTopic, data: WebSocketDataType): void {
+  broadcastWsMessage(topic: WebSocketTopic, data: WebSocketDataType): void {
+    logger.info('Broadcast Message', topic, data);
+
     this.webSocketServer.clients.forEach(function each(client: WebSocketExtended) {
       if (client.readyState === WebSocket.OPEN && client.isLoggedIn) {
-        logger.info('Broadcast Message', topic, data);
         client.send(JSON.stringify({topic, data}));
       }
     });
   }
 
-  sendTargettedMessage(topic: WebSocketTopic, data: WebSocketDataType, target: webSocketId[]) {
+  sendWsMessageByChannelId(topic: WebSocketTopic, data: WebSocketDataType, channelIds: webSocketId[]) {
+    logger.info('Send targetted Message', topic, data);
+
     this.webSocketServer.clients.forEach(function each(client: WebSocketExtended) {
-      if (client.readyState === WebSocket.OPEN && client.isLoggedIn && target.includes(client.id)) {
-        logger.info('Send targetted Message', topic, data);
+      if (client.readyState === WebSocket.OPEN && client.isLoggedIn && channelIds.includes(client.activeChannel)) {
         client.send(JSON.stringify({topic, data}));
       }
     });
+  }
 
+  sendWsMessageByUserId(topic: WebSocketTopic, data: WebSocketDataType, userIds: webSocketId[]) {
+    logger.info('Send targetted Message', topic, data);
+
+    this.webSocketServer.clients.forEach(function each(client: WebSocketExtended) {
+      if (client.readyState === WebSocket.OPEN && client.isLoggedIn && userIds.includes(client.activeChannel)) {
+        client.send(JSON.stringify({topic, data}));
+      }
+    });
   }
 }

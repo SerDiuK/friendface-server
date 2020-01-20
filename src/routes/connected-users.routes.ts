@@ -9,6 +9,10 @@ export class ConnectedUsersRoutes {
     router.route('/')
       .get(controller.getConnectedUsers);
 
+
+    router.route('/:id')
+      .get(controller.getConnectedUsersByChannel);
+
     return router;
   }
 
