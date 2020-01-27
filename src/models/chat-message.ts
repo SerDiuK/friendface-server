@@ -3,7 +3,7 @@ import { Schema, Document, model } from 'mongoose';
 export interface ChatMessage {
   author: string;
   body: string;
-  timestamp: string;
+  timestamp?: string;
   channel: string;
 }
 

@@ -40,6 +40,7 @@ export class WebSocketController {
 export class WebSocketConnection {
   id: webSocketId;
   activeChannel: string;
+  name: string;
 
   constructor(private ws: WebSocketExtended) {
     this.id = uuid();
@@ -73,8 +74,15 @@ export class WebSocketConnection {
   private async handleChatMessage(data: ChatMessage): Promise<void> {
     logger.info('handleChatMessage', data);
 
-    const chatMessageData = await chatService.postChatMessage(data);
-    wsService.broadcastWsMessage(WebSocketTopic.Chat, chatMessageData);
+    const chatMessageData = await chatService.postChatMessage({
+      body: data.body,
+      author: this.name,
+      channel: this.activeChannel
+    });
+
+    if (!(chatMessageData as any).errors) {
+      wsService.sendWsMessageByChannelId(WebSocketTopic.Chat, chatMessageData, [this.activeChannel]);
+    }
   }
 
   private async handleBoardMessage(data: BoardMessage ): Promise<void> {
@@ -92,6 +100,7 @@ export class WebSocketConnection {
       channel: '5e1c6857feca18b5358f6913'
     });
 
+    this.name = data.name;
     this.activeChannel = '5e1c6857feca18b5358f6913';
     this.ws.activeChannel = '5e1c6857feca18b5358f6913';
     this.ws.isLoggedIn = true;

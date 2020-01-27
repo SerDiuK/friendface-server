@@ -1,4 +1,3 @@
-import moment from 'moment';
 import ChannelMessageSchema, { Channel } from '../models/channel';
 import { LoggerService } from './logger.service';
 
