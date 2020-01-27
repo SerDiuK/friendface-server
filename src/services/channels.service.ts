@@ -1,5 +1,6 @@
 import ChannelMessageSchema, { Channel } from '../models/channel';
 import { LoggerService } from './logger.service';
+import { ChannelType } from '../models/channel';
 
 const logger = LoggerService.getInstance();
 
@@ -14,7 +15,7 @@ export class ChannelsService {
     return ChannelsService.instance;
   }
 
-  getChannels(): Promise<Channel[]> {
+  getChannels(type: ChannelType): Promise<Channel[]> {
     return ChannelMessageSchema.find({})
       .populate('participants')
       .exec()

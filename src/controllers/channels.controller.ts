@@ -12,7 +12,7 @@ export class ChannelsController {
   async getChannels(req: Request, res: Response): Promise<void> {
     logger.info('Incoming query getChannels');
 
-    res.json(await channelsService.getChannels());
+    res.json(await channelsService.getChannels(req.query.type));
   }
 
   async createChannel(req: Request, res: Response): Promise<void> {
