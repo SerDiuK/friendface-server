@@ -1,13 +1,37 @@
 import { Request, Response, NextFunction } from 'express';
+import { UsersService } from '../services/users.service';
+import { LoggerService } from '../services/logger.service';
+import passport from 'passport';
+
+const logger = LoggerService.getInstance();
+const usersService = UsersService.getInstance();
 
 export class AuthController {
-  async login(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const { body: { user } } = req;
+  async register(req: Request, res: Response): Promise<void> {
+    logger.info('Register request incoming');
 
-    if (!user.email) {
+    const user = req.body;
+
+    if (!user.password) {
       res.status(422).json({
         errors: {
-          email: 'is required',
+          password: 'is required',
+        },
+      });
+    }
+
+    res.json(await usersService.register(user));
+  }
+
+  login(req: Request, res: Response, next: NextFunction): Promise<void> {
+    logger.info('Login request incoming');
+
+    const user = req.body;
+
+    if (!user.username) {
+      res.status(422).json({
+        errors: {
+          username: 'is required',
         },
       });
     }
@@ -20,12 +44,20 @@ export class AuthController {
       });
     }
 
-    const finalUser = new Users(user);
+    return passport.authenticate('local', { session: false }, (err, passportUser) => {
 
-    finalUser.setPassword(user.password);
+      if (err) {
+        return next(err);
+      }
 
-    return finalUser.save()
-      .then(() => res.json({ user: finalUser.toAuthJSON() }));
+      if (passportUser) {
+        const ppuser = passportUser;
+        ppuser.token = passportUser.generateJWT();
 
+        return res.json({user: ppuser.toAuthJSON()});
+      }
+
+      return res.status(400).json({ error: 'Authentication failed' });
+    })(req, res, next);
   }
 }

@@ -3,28 +3,37 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 
 export interface User {
-  name: string;
-  webSocketSessionId: string;
+  username: string;
   activeChannel: string;
   channelSubscriptions: string[];
   hash: string;
   salt: string;
   email: string;
+  isConnected: boolean;
 }
 
 export interface UserDocument extends Document, User {
+  setPassword(password: string): void;
+  validatePassword(password): string;
+  generateJWT(): string;
+  toAuthJSON(): { _id: string; email: string; token: string; };
 }
 
 const UserSchema: Schema = new Schema({
-  name: { type: String, required: true },
+  username: {
+    type: String,
+    required: true,
+    unique: true,
+    dropDups: true
+  },
   hash: String,
   salt: String,
   email: String,
-  webSocketSessionId: { type: String, required: true },
   activeChannel: {
     type: Schema.Types.ObjectId,
     ref: 'Channel',
   },
+  isConnected: Boolean,
   channelSubscriptions: [{
     type: Schema.Types.ObjectId,
     ref: 'Channel',
@@ -47,7 +56,7 @@ UserSchema.methods.generateJWT = function() {
   expirationDate.setDate(today.getDate() + 60);
 
   return jwt.sign({
-    email: this.email,
+    username: this.username,
     id: this._id,
     exp: expirationDate.getTime(),
   }, process.env.SESSION_SECRET);
@@ -56,7 +65,7 @@ UserSchema.methods.generateJWT = function() {
 UserSchema.methods.toAuthJSON = function() {
   return {
     _id: this._id,
-    email: this.email,
+    username: this.username,
     token: this.generateJWT(),
   };
 };

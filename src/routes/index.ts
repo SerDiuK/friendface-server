@@ -4,6 +4,7 @@ import { ChatMessagesRoutes } from './chat-messages.routes';
 import { BoardRoutes } from './board.routes';
 import { ConnectedUsersRoutes } from './connected-users.routes';
 import { AuthRoutes } from './auth.routes';
+import { UsersRoutes } from './users.routes';
 
 export class ApplicationRoutes {
   static getRoutes(): Router {
@@ -18,6 +19,7 @@ export class ApplicationRoutes {
     router.use('/board', BoardRoutes.getRoutes());
     router.use('/connected-users', ConnectedUsersRoutes.getRoutes());
     router.use('/auth', AuthRoutes.getRoutes());
+    router.use('/users', UsersRoutes.getRoutes());
 
     return router;
   }
