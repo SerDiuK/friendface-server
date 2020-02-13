@@ -1,5 +1,5 @@
 # Friendface
-Exercise for students of Simplon. The goal is to create a chat application in Angular using Websockets.
+Backend for chat exercise. The goal is to create a chat application in Angular using Websockets.
 
 ## Setup
 
@@ -11,6 +11,7 @@ API_URL=http://localhost
 MONGODB=mongodb://
 API_PORT=3000
 WEBSOCKET_PORT=3001
+SESSION_SECRET=secret
 ```
 
 To run the server locally
@@ -23,24 +24,38 @@ npm start
 
 ## API
 
+Auth:
+
+```
+POST   api/auth/register     - Register user with BODY { username: string, password: string, email: string }
+POST   api/auth/login        - Login user with BODY { username: string, password: string }
+GET    api/logout            - Logout user
+GET    api/current           - Get current user with new token
+```
+
+
 Chat messages:
 
 ```
 GET    api/chat-messages     - Get all chat messages
+GET    api/chat-messages/:id - Get all chat messages by channel id
 POST   api/chat-messages     - Post a chat message with BODY: { author: string, message: string }
 DELETE api/chat-messages     - Delete all chat messages
 ```
 
-Connected users:
+Users:
 
 ```
-GET    api/connected-users   - Get all connected users
+GET    api/users             - Get all users
+GET    api/users/:id         - Get all users in by channel id
 ```
 
 Channels:
 
 ```
 GET    api/channels          - Get all channels
+POST   api/channels          - Create a channel with BODY: { name: string }
+DELETE api/channels/:id      - Delete channel by id
 ```
 
 The entire documentation can be found on Postman:
@@ -62,9 +77,9 @@ The Websocket emits the following messages:
 ```
 { "topic": "chat", "data": { "author": "string", "message": "string" }} // Chat message sent to channel
 { "topic": "user connected", "data": { "_id": "string", "name": "string", "websocketSession": "string" }} // User connected to channel
-{ topic: "user disconnected", "data": { "id": "string" }} // User disconnected from channel
-{ topic: "channel created", "data": { "id": "string" }} // User disconnected from channel
-{ topic: "channel deleted", "data": { "id": "string" }} // User disconnected from channel
+{ "topic": "user disconnected", "data": { "id": "string" }} // User disconnected from channel
+{ "topic": "channel created", "data": { "id": "string" }} // User disconnected from channel
+{ "topic": "channel deleted", "data": { "id": "string" }} // User disconnected from channel
 
 ```
 
