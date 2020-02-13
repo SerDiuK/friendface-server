@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { UsersController } from '../controllers/users.controller';
-import { AuthService } from '../services/auth.service';
 
 export class UsersRoutes {
   static getRoutes(): Router {
@@ -8,14 +7,13 @@ export class UsersRoutes {
     const controller = new UsersController();
 
     router.route('/')
-      .get(AuthService.required, controller.getUsers);
+      .get(controller.getUsers);
 
 
     router.route('/:id')
-      .get(AuthService.required, controller.getUsersByChannel)
-      .delete(AuthService.required, controller.deleteUser);
+      .get(controller.getUsersByChannel)
+      .delete(controller.deleteUser);
 
     return router;
   }
-
 }

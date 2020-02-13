@@ -2,11 +2,9 @@ import { Server } from 'http';
 import * as WebSocket from 'ws';
 import { WebSocketExtended, webSocketId } from '../controllers/websocket.controller';
 import { WebSocketDataType, WebSocketTopic } from '../models/websocket-message';
-import { ConnectedUserService } from './connected-user.service';
 import { LoggerService } from './logger.service';
 
 const logger = LoggerService.getInstance();
-const connectedUserService = ConnectedUserService.getInstance();
 
 export class WebSocketService {
   private static instance: WebSocketService;
@@ -23,7 +21,7 @@ export class WebSocketService {
 
   async initWebSocketServer(server: Server): Promise<{}> {
     this.webSocketServer = new WebSocket.Server({ server });
-    return connectedUserService.clearConnectedUsers();
+    return {};
   }
 
   broadcastWsMessage(topic: WebSocketTopic, data: WebSocketDataType): void {
@@ -37,7 +35,7 @@ export class WebSocketService {
   }
 
   sendWsMessageByChannelId(topic: WebSocketTopic, data: WebSocketDataType, channelIds: webSocketId[]) {
-    logger.info('Send targetted Message', topic, data);
+    logger.info('Send channel Message', topic, data);
 
     this.webSocketServer.clients.forEach(function each(client: WebSocketExtended) {
       if (client.readyState === WebSocket.OPEN && client.isLoggedIn && channelIds.includes(client.activeChannel)) {
@@ -47,7 +45,7 @@ export class WebSocketService {
   }
 
   sendWsMessageByUserId(topic: WebSocketTopic, data: WebSocketDataType, userIds: webSocketId[]) {
-    logger.info('Send targetted Message', topic, data);
+    logger.info('Send direct Message', topic, data);
 
     this.webSocketServer.clients.forEach(function each(client: WebSocketExtended) {
       if (client.readyState === WebSocket.OPEN && client.isLoggedIn && userIds.includes(client.activeChannel)) {

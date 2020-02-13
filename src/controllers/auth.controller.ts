@@ -1,14 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
+import { AuthService } from '../services/auth.service';
 import { UsersService } from '../services/users.service';
 import { LoggerService } from '../services/logger.service';
-import passport from 'passport';
 
 const logger = LoggerService.getInstance();
 const usersService = UsersService.getInstance();
 
 export class AuthController {
   async register(req: Request, res: Response): Promise<void> {
-    logger.info('Register request incoming');
+    logger.info('register request incoming', req.body);
 
     const user = req.body;
 
@@ -24,7 +24,7 @@ export class AuthController {
   }
 
   login(req: Request, res: Response, next: NextFunction): Promise<void> {
-    logger.info('Login request incoming');
+    logger.info('login request incoming');
 
     const user = req.body;
 
@@ -44,20 +44,21 @@ export class AuthController {
       });
     }
 
-    return passport.authenticate('local', { session: false }, (err, passportUser) => {
+    return AuthService.authenticate(req, res, next);
+  }
 
-      if (err) {
-        return next(err);
-      }
+  async getCurrentUser(req: Request, res: Response) {
+    logger.info('getCurrentUser request incoming');
 
-      if (passportUser) {
-        const ppuser = passportUser;
-        ppuser.token = passportUser.generateJWT();
+    const id = (req as any).payload.id;
 
-        return res.json({user: ppuser.toAuthJSON()});
-      }
+    res.json({ user: await usersService.getUser(id).then(user => user.toAuthJSON()) });
+  }
 
-      return res.status(400).json({ error: 'Authentication failed' });
-    })(req, res, next);
+  logout(req: Request, res: Response) {
+    logger.info('logout request incoming');
+
+    req.logout();
+    res.json({});
   }
 }

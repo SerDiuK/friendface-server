@@ -1,4 +1,4 @@
-import UserSchema, { User } from '../models/user';
+import UserSchema, { User, UserDocument } from '../models/user';
 import { LoggerService } from './logger.service';
 
 const logger = LoggerService.getInstance();
@@ -14,18 +14,29 @@ export class UsersService {
     return UsersService.instance;
   }
 
-  register(user): Promise<User> {
-    const newUser = new UserSchema(user);
+  register(body): Promise<User> {
+    const newUser = new UserSchema(body);
 
-    newUser.setPassword(user.password);
+    newUser.setPassword(body.password);
 
-    return newUser.save().then(msg => {
-      logger.info('register SUCCESS', msg);
-      return msg;
+    return newUser.save().then(user => {
+      logger.info('register SUCCESS', user);
+      return { _id: user._id };
     }).catch(err => {
       logger.error('register FAILED', err);
       return err;
     });
+  }
+
+  getUser(id: string): Promise<UserDocument> {
+    return UserSchema.findById(id, 'username email')
+      .then((user) => {
+        logger.info('getCurrentUser SUCCESS', user);
+        return user;
+      }).catch(err => {
+        logger.error('getCurrentUser FAILED', err);
+        return err;
+      });
   }
 
   getUsers(): Promise<User[]> {
@@ -49,11 +60,30 @@ export class UsersService {
   }
 
   deleteUser(id: string): Promise<User> {
-    return UserSchema.findOneAndDelete({ _id: id }).then(user => {
+    return UserSchema.findByIdAndDelete(id).then(user => {
       logger.info('deleteUser SUCCESS', user);
       return user._id;
     }).catch(err => {
       logger.error('deleteUser FAILED', err);
+      return err;
+    });
+  }
+
+  userConnected(id: string): Promise<User> {
+    return UserSchema.findByIdAndUpdate(id, { isConnected: true }).then(user => {
+      logger.info('userConnected SUCCESS', user);
+      return user;
+    }).catch(err => {
+      logger.error('userConnected FAILED', err);
+      return err;
+    });
+  }
+
+  userDisconnected(id: string): Promise<User> {
+    return UserSchema.findByIdAndUpdate(id, { isConnected: false }).then(user => {
+      logger.info('userConnected SUCCESS', user);
+    }).catch(err => {
+      logger.error('userConnected FAILED', err);
       return err;
     });
   }

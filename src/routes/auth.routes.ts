@@ -9,6 +9,8 @@ export class AuthRoutes {
 
     router.post('/register', AuthService.optional, controller.register);
     router.post('/login', AuthService.optional, controller.login);
+    router.get('/logout', AuthService.optional, controller.logout);
+    router.get('/current', AuthService.required, controller.getCurrentUser);
 
     return router;
   }

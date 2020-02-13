@@ -28,7 +28,12 @@ const UserSchema: Schema = new Schema({
   },
   hash: String,
   salt: String,
-  email: String,
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    dropDups: true
+  },
   activeChannel: {
     type: Schema.Types.ObjectId,
     ref: 'Channel',

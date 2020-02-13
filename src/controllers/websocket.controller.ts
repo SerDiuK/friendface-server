@@ -1,19 +1,16 @@
 import { Server } from 'http';
 import uuid from 'uuid/v1';
 import * as WebSocket from 'ws';
-import { BoardMessage } from '../models/board-message';
 import { ChatMessage } from '../models/chat-message';
 import { JoinChannelData, LoginMessageData, WebSocketMessage, WebSocketTopic } from '../models/websocket-message';
-import { BoardService } from '../services/board.service';
 import { ChatMessagesService } from '../services/chat-messages.service';
-import { ConnectedUserService } from '../services/connected-user.service';
 import { LoggerService } from '../services/logger.service';
+import { UsersService } from '../services/users.service';
 import { WebSocketService } from '../services/websocket.service';
 
 const wsService = WebSocketService.getInstance();
 const chatService = ChatMessagesService.getInstance();
-const boardService = BoardService.getInstance();
-const connectedUserService = ConnectedUserService.getInstance();
+const usersService = UsersService.getInstance();
 const logger = LoggerService.getInstance();
 
 export type webSocketId = string;
@@ -41,6 +38,7 @@ export class WebSocketConnection {
   id: webSocketId;
   activeChannel: string;
   name: string;
+  userId: string;
 
   constructor(private ws: WebSocketExtended) {
     this.id = uuid();
@@ -60,8 +58,6 @@ export class WebSocketConnection {
     switch (parsedMsg.topic) {
       case WebSocketTopic.Chat:
         return await this.handleChatMessage(parsedMsg.data as ChatMessage);
-      case WebSocketTopic.Status:
-        return await this.handleBoardMessage(parsedMsg.data as BoardMessage);
       case WebSocketTopic.Login:
         return await this.handleLoginMessage(parsedMsg.data as LoginMessageData);
       case WebSocketTopic.JoinChannel:
@@ -85,27 +81,15 @@ export class WebSocketConnection {
     }
   }
 
-  private async handleBoardMessage(data: BoardMessage ): Promise<void> {
-    logger.info('handleBoardMessage', data);
-
-    const boardMessageData = await boardService.postBoardMessage(data);
-    wsService.broadcastWsMessage(WebSocketTopic.Board, boardMessageData);
-  }
-
   private async handleLoginMessage(data: LoginMessageData): Promise<void> {
     logger.info('handleLoginMessage', data);
-    const newUser = await connectedUserService.addConnectedUser({
-      name: data.name,
-      webSocketSessionId: this.id,
-      channel: '5e1c6857feca18b5358f6913'
-    });
 
-    this.name = data.name;
+    this.userId = data.id;
     this.activeChannel = '5e1c6857feca18b5358f6913';
     this.ws.activeChannel = '5e1c6857feca18b5358f6913';
     this.ws.isLoggedIn = true;
 
-    wsService.sendWsMessageByChannelId(WebSocketTopic.UserConnected, newUser as LoginMessageData, ['5e1c6857feca18b5358f6913']);
+    wsService.sendWsMessageByChannelId(WebSocketTopic.UserConnected, await usersService.getUser(data.id), ['5e1c6857feca18b5358f6913']);
   }
 
   private async handleJoinChannel(data: JoinChannelData): Promise<void> {
@@ -114,14 +98,16 @@ export class WebSocketConnection {
     this.activeChannel = data.id;
     this.ws.activeChannel = data.id;
 
-    const connectedUser = await connectedUserService.updateChannel(this.id, this.activeChannel);
-    wsService.sendWsMessageByChannelId(WebSocketTopic.UserConnected, connectedUser, [this.activeChannel]);
+    const user = await usersService.userConnected(this.userId);
+
+    wsService.sendWsMessageByChannelId(WebSocketTopic.UserConnected, user, [this.activeChannel]);
   }
 
   private async handleConnectionClosed(): Promise<void> {
     logger.info('Connection Closed', this.id);
 
-    const deletedUserId = await connectedUserService.removeConnectedUser(this.id);
-    wsService.broadcastWsMessage(WebSocketTopic.UserDisconnected, { id: deletedUserId } as LoginMessageData);
+    await usersService.userDisconnected(this.userId);
+
+    wsService.broadcastWsMessage(WebSocketTopic.UserDisconnected, { id: this.userId } as LoginMessageData);
   }
 }
