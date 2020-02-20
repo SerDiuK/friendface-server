@@ -1,6 +1,7 @@
 import ChannelMessageSchema, { Channel } from '../models/channel';
 import { LoggerService } from './logger.service';
 import { ChannelType } from '../models/channel';
+import { ErrorResponse } from '../utils/service-utils';
 
 const logger = LoggerService.getInstance();
 
@@ -15,20 +16,20 @@ export class ChannelsService {
     return ChannelsService.instance;
   }
 
-  getChannels(type: ChannelType): Promise<Channel[]> {
+  getChannels(type: ChannelType): Promise<Channel[] | ErrorResponse> {
     return ChannelMessageSchema.find({})
       .populate('participants')
       .exec()
       .then(channels => {
         logger.info('getChannels SUCCESS', channels);
         return channels;
-      }).catch(err => {
-        logger.error('getChannels FAILED', err);
-        return err;
+      }).catch(error => {
+        logger.error('getChannels FAILED', error);
+        return { error, status: 400} as ErrorResponse;
       });
   }
 
-  createChannel(body: Channel): Promise<Channel> {
+  createChannel(body: Channel): Promise<Channel | ErrorResponse> {
     const newChannel = new ChannelMessageSchema({
       ...body
     });
@@ -36,19 +37,19 @@ export class ChannelsService {
     return newChannel.save().then(channel => {
       logger.info('createChannel SUCCESS', channel);
       return channel;
-    }).catch(err => {
-      logger.error('createChannel FAILED', err);
-      return err;
+    }).catch(error => {
+      logger.error('createChannel FAILED', error);
+      return { error, status: 400 } as ErrorResponse;
     });
   }
 
-  deleteChannel(id): Promise<string> {
+  deleteChannel(id): Promise<{ _id: string } | ErrorResponse> {
     return ChannelMessageSchema.findByIdAndDelete(id).then(() => {
       logger.info('deleteChannel SUCCESS');
-      return id;
-    }).catch(err => {
-      logger.error('deleteChannel FAILED', err);
-      return err;
+      return { _id: id };
+    }).catch(error => {
+      logger.error('deleteChannel FAILED', error);
+      return { error, status: 400 };
     });
   }
 }

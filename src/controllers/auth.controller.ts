@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { AuthService } from '../services/auth.service';
 import { UsersService } from '../services/users.service';
 import { LoggerService } from '../services/logger.service';
+import { ErrorResponse } from '../utils/service-utils';
 
 const logger = LoggerService.getInstance();
 const usersService = UsersService.getInstance();
@@ -51,8 +52,13 @@ export class AuthController {
     logger.info('getCurrentUser request incoming');
 
     const id = (req as any).payload.id;
+    const user = await usersService.getAuthUser(id);
 
-    res.json({ user: await usersService.getUser(id).then(user => user.toAuthJSON()) });
+    if ((user as ErrorResponse).error) {
+      res.status((user as ErrorResponse).status).json((user as ErrorResponse).error);
+    } else {
+      res.json({ user });
+    }
   }
 
   logout(req: Request, res: Response) {

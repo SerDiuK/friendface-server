@@ -12,11 +12,17 @@ export interface User {
   isConnected: boolean;
 }
 
+export interface AuthUser {
+  _id: string;
+  username: string;
+  token: string;
+}
+
 export interface UserDocument extends Document, User {
   setPassword(password: string): void;
   validatePassword(password): string;
   generateJWT(): string;
-  toAuthJSON(): { _id: string; email: string; token: string; };
+  toAuthJSON(): AuthUser;
 }
 
 const UserSchema: Schema = new Schema({
@@ -67,7 +73,7 @@ UserSchema.methods.generateJWT = function() {
   }, process.env.SESSION_SECRET);
 };
 
-UserSchema.methods.toAuthJSON = function() {
+UserSchema.methods.toAuthJSON = function(): AuthUser {
   return {
     _id: this._id,
     username: this.username,

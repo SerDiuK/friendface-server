@@ -3,6 +3,8 @@ import { LoggerService } from '../services/logger.service';
 import { Request, Response } from 'express';
 import { ChatMessagesService } from '../services/chat-messages.service';
 import { WebSocketService } from '../services/websocket.service';
+import { ChatMessage } from '../models/chat-message';
+import { ErrorResponse } from '../utils/service-utils';
 
 const logger = LoggerService.getInstance();
 const chatService = ChatMessagesService.getInstance();
@@ -26,16 +28,23 @@ export class ChatMessagesController {
 
     const msg = await chatService.postChatMessage(req.body);
 
-    if (!(msg as any).errors) {
-      wsService.sendWsMessageByChannelId(WebSocketTopic.Chat, msg, req.body.channel);
+    if ((msg as ErrorResponse).error) {
+      res.status((msg as ErrorResponse).status).json((msg as ErrorResponse).error);
+    } else {
+      wsService.sendWsMessageByChannelId(WebSocketTopic.Chat, msg as ChatMessage, req.body.channel);
+      res.json(msg);
     }
-
-    res.json(msg);
   }
 
   async deleteChatMessages(req: Request, res: Response): Promise<void> {
     logger.info('Incoming query deleteChatMessages');
 
-    res.json(await chatService.deleteChatMessages());
+    const msg = await chatService.deleteChatMessages();
+
+    if ((msg as ErrorResponse).error) {
+      res.status((msg as ErrorResponse).status).json((msg as ErrorResponse).error);
+    } else {
+      res.json({});
+    }
   }
 }

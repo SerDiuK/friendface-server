@@ -1,6 +1,6 @@
 import { Channel } from './channel';
 import { ChatMessage } from './chat-message';
-import { User } from './user';
+import { User, AuthUser } from './user';
 
 export interface WebSocketMessage {
   topic: WebSocketTopic;
@@ -31,7 +31,7 @@ export type WebSocketDataType =
   | ChannelCreatedData
   | ChannelDeletedData;
 
-export type UserConnectedData = User;
+export type UserConnectedData = AuthUser | User;
 
 export interface UserDisconnectedData {
   id: string;

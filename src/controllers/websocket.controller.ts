@@ -7,6 +7,7 @@ import { ChatMessagesService } from '../services/chat-messages.service';
 import { LoggerService } from '../services/logger.service';
 import { UsersService } from '../services/users.service';
 import { WebSocketService } from '../services/websocket.service';
+import { AuthUser, User } from '../models/user';
 
 const wsService = WebSocketService.getInstance();
 const chatService = ChatMessagesService.getInstance();
@@ -76,8 +77,8 @@ export class WebSocketConnection {
       channel: this.activeChannel
     });
 
-    if (!(chatMessageData as any).errors) {
-      wsService.sendWsMessageByChannelId(WebSocketTopic.Chat, chatMessageData, [this.activeChannel]);
+    if (!(chatMessageData as any).error) {
+      wsService.sendWsMessageByChannelId(WebSocketTopic.Chat, chatMessageData as ChatMessage, [this.activeChannel]);
     }
   }
 
@@ -89,7 +90,7 @@ export class WebSocketConnection {
     this.ws.activeChannel = '5e1c6857feca18b5358f6913';
     this.ws.isLoggedIn = true;
 
-    wsService.sendWsMessageByChannelId(WebSocketTopic.UserConnected, await usersService.getUser(data.id), ['5e1c6857feca18b5358f6913']);
+    wsService.sendWsMessageByChannelId(WebSocketTopic.UserConnected, await usersService.getAuthUser(data.id) as AuthUser, ['5e1c6857feca18b5358f6913']);
   }
 
   private async handleJoinChannel(data: JoinChannelData): Promise<void> {
@@ -100,7 +101,7 @@ export class WebSocketConnection {
 
     const user = await usersService.userConnected(this.userId);
 
-    wsService.sendWsMessageByChannelId(WebSocketTopic.UserConnected, user, [this.activeChannel]);
+    wsService.sendWsMessageByChannelId(WebSocketTopic.UserConnected, user as User, [this.activeChannel]);
   }
 
   private async handleConnectionClosed(): Promise<void> {
